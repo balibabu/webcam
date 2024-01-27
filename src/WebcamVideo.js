@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Webcam from "react-webcam";
 
 export default function WebcamVideo() {
@@ -7,6 +7,7 @@ export default function WebcamVideo() {
     const [capturing, setCapturing] = React.useState(false);
     const [recordedChunks, setRecordedChunks] = React.useState([]);
     const [intervalId, setIntervalId] = React.useState(null);
+    const [info, setInfo] = useState('');
 
     useEffect(() => {
         return () => {
@@ -17,7 +18,8 @@ export default function WebcamVideo() {
     const handleDataAvailable = React.useCallback(
         ({ data }) => {
             if (data.size > 0) {
-                setRecordedChunks((prev) => prev.concat(data));
+                console.log(data);
+                upload([data],setInfo)
             }
         },
         [setRecordedChunks]
@@ -26,8 +28,6 @@ export default function WebcamVideo() {
     const startRecordingInterval = () => {
         setIntervalId(setInterval(() => {
             handleStopCaptureClick();
-            upload(recordedChunks);
-            setRecordedChunks([]);
             handleStartCaptureClick();
         }, 3000));
     };
@@ -55,36 +55,6 @@ export default function WebcamVideo() {
         }
     };
 
-    const handleDownload = () => {
-        if (recordedChunks.length) {
-            const blob = new Blob(recordedChunks, {
-                type: "video/webm",
-            });
-            const formData = new FormData();
-            formData.append("file", blob, "video.webm");
-
-            // Make a POST request using fetch
-            fetch("http://babu2.pythonanywhere.com/upload/mobile", {
-                method: "POST",
-                body: formData,
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json(); // Assuming the response is in JSON format
-                })
-                .then(data => {
-                    // Handle the response data as needed
-                    console.log(data);
-                })
-                .catch(error => {
-                    // Handle errors during the fetch
-                    console.error("Fetch error:", error);
-                });
-            setRecordedChunks([]);
-        }
-    };
 
     const videoConstraints = {
         width: 420,
@@ -94,6 +64,7 @@ export default function WebcamVideo() {
 
     return (
         <div className="Container">
+            <div>{info}</div>
             <Webcam
                 height={400}
                 width={400}
@@ -111,9 +82,9 @@ export default function WebcamVideo() {
 }
 
 
-function upload(recordedChunks) {
-    if (recordedChunks.length) {
-        console.log('uploading');
+function upload(recordedChunks,setInfo) {
+    if (recordedChunks) {
+        setInfo('uploading');
         const blob = new Blob(recordedChunks, {
             type: "video/webm",
         });
@@ -129,6 +100,7 @@ function upload(recordedChunks) {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
+                setInfo('successfully uploaded')
                 return response.json(); // Assuming the response is in JSON format
             })
             .then(data => {
@@ -137,10 +109,11 @@ function upload(recordedChunks) {
             })
             .catch(error => {
                 // Handle errors during the fetch
+                setInfo('error')
                 console.error("Fetch error:", error);
             });
     }else{
-        console.log('no length');
+        setInfo('no length');
 
     }
 
