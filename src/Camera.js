@@ -6,13 +6,14 @@ const videoConstraints = {
   facingMode: "environment"
 };
 
-const Camera = () => {
+const Camera = (props) => {
   const webcamRef = useRef(null);
   const [url, setUrl] = React.useState(null);
 
   const capturePhoto = React.useCallback(async () => {
     const imageSrc = webcamRef.current.getScreenshot();
     setUrl(imageSrc);
+    props.uploadImage(imageSrc);
   }, [webcamRef]);
 
   const onUserMedia = (e) => {
@@ -23,7 +24,7 @@ const Camera = () => {
     <>
       <Webcam
         ref={webcamRef}
-        audio={true}
+        audio={false}
         screenshotFormat="image/jpeg"
         videoConstraints={videoConstraints}
         onUserMedia={onUserMedia}
