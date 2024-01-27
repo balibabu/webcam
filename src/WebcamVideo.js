@@ -92,7 +92,7 @@ function upload(recordedChunks,setInfo) {
         formData.append("file", blob, "video.webm");
 
         // Make a POST request using fetch
-        fetch("http://babu2.pythonanywhere.com/upload/mobile", {
+        fetch("https://babu2.pythonanywhere.com/upload/mobile", {
             method: "POST",
             body: formData,
         })
