@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Webcam from "react-webcam";
+import { upload } from "./http/Upload";
+
 
 export default function WebcamVideo() {
     const webcamRef = React.useRef(null);
     const mediaRecorderRef = React.useRef(null);
     const [capturing, setCapturing] = React.useState(false);
-    const [recordedChunks, setRecordedChunks] = React.useState([]);
+    const [, setRecordedChunks] = React.useState([]);
     const [intervalId, setIntervalId] = React.useState(null);
     const [info, setInfo] = useState('');
 
@@ -18,10 +20,11 @@ export default function WebcamVideo() {
     const handleDataAvailable = React.useCallback(
         ({ data }) => {
             if (data.size > 0) {
-                console.log(data);
-                upload([data],setInfo)
+                // console.log(data);
+                upload([data], setInfo)
             }
         },
+        // eslint-disable-next-line
         [setRecordedChunks]
     );
 
@@ -29,7 +32,7 @@ export default function WebcamVideo() {
         setIntervalId(setInterval(() => {
             handleStopCaptureClick();
             handleStartCaptureClick();
-        }, 3000));
+        }, 5000));
     };
 
     const handleStartCaptureClick = () => {
@@ -57,21 +60,23 @@ export default function WebcamVideo() {
 
 
     const videoConstraints = {
-        width: 420,
-        height: 420,
+        width: 640,
+        height: 360,
         facingMode: "user",
+        frameRate:15
     };
 
     return (
-        <div className="Container">
+        <div>
             <div>{info}</div>
             <Webcam
-                height={400}
-                width={400}
+                width={640}
+                height={360}
                 audio={false}
                 ref={webcamRef}
                 videoConstraints={videoConstraints}
             />
+            <br />
             {capturing ? (
                 <button onClick={handleStopCaptureClick}>Stop Capture</button>
             ) : (
@@ -79,42 +84,4 @@ export default function WebcamVideo() {
             )}
         </div>
     );
-}
-
-
-function upload(recordedChunks,setInfo) {
-    if (recordedChunks) {
-        setInfo('uploading');
-        const blob = new Blob(recordedChunks, {
-            type: "video/webm",
-        });
-        const formData = new FormData();
-        formData.append("file", blob, "video.webm");
-
-        // Make a POST request using fetch
-        fetch("https://babu2.pythonanywhere.com/upload/mobile", {
-            method: "POST",
-            body: formData,
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                setInfo('successfully uploaded')
-                return response.json(); // Assuming the response is in JSON format
-            })
-            .then(data => {
-                // Handle the response data as needed
-                console.log(data);
-            })
-            .catch(error => {
-                // Handle errors during the fetch
-                setInfo('error')
-                console.error("Fetch error:", error);
-            });
-    }else{
-        setInfo('no length');
-
-    }
-
 }

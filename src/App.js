@@ -1,19 +1,19 @@
 import React from "react";
 
-import Camera from "./Camera";
-import AllCameras from "./AllCamera";
-import Soket from "./Soket";
-import WebcamVideo from "./WebcamVideo";
+import WebcamVideo from "./components/WebcamVideo";
+import { HashRouter, Route, Routes } from "react-router-dom";
+import Controls from "./components/Controls";
 
 export default function App() {
 
   return (
-    <div className="App" style={{ height: '100dvh', width: '100dvw' }}>
-      {/* <Soket /> */}
-      {/* <Camera /> */}
-      <WebcamVideo />
-      {/* <AllCameras /> */}
-    </div>
+    <HashRouter>
+      <Routes>
+        <Route path='/' element={<WebcamVideo />} />
+        <Route path="/controls" element={<Controls />} />
+        {/* <Route path='/' element={<WebcamVideo />} /> */}
+      </Routes>
+    </HashRouter>
   );
 }
 
