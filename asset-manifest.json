@@ -1,0 +1,12 @@
+{
+  "files": {
+    "main.js": "/webcam/static/js/main.d7ab1eba.js",
+    "static/js/902.20c39cde.chunk.js": "/webcam/static/js/902.20c39cde.chunk.js",
+    "index.html": "/webcam/index.html",
+    "main.d7ab1eba.js.map": "/webcam/static/js/main.d7ab1eba.js.map",
+    "902.20c39cde.chunk.js.map": "/webcam/static/js/902.20c39cde.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.d7ab1eba.js"
+  ]
+}
